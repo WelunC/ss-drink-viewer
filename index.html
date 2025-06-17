@@ -74,33 +74,6 @@
             box.appendChild(ingList);
           }
 
-          if (drink.products?.length) {
-            const outTitle = document.createElement('div');
-            outTitle.textContent = 'Produces:';
-            outTitle.className = 'section-title';
-            box.appendChild(outTitle);
-
-            const prodList = document.createElement('ul');
-            drink.products.forEach(p => {
-              const li = document.createElement('li');
-              li.textContent = `${p.amount}x ${p.id}`;
-              if (p.reagentData?.metabolisms) {
-                const effects = Object.entries(p.reagentData.metabolisms).flatMap(([key, meta]) => {
-                  return (meta.effects || []).map(e => `${e.type}`);
-                });
-                if (effects.length) {
-                  const effectDiv = document.createElement('div');
-                  effectDiv.style.fontSize = '0.9em';
-                  effectDiv.style.color = '#444';
-                  effectDiv.textContent = 'Effects: ' + effects.join(', ');
-                  li.appendChild(effectDiv);
-                }
-              }
-              prodList.appendChild(li);
-            });
-            box.appendChild(prodList);
-          }
-
           container.appendChild(box);
         });
       });
