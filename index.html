@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SS14 Bartender Drinks</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1em;
+      background: #f2f2f2;
+    }
+    .drink-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      justify-content: center;
+    }
+    .drink-box {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      padding: 1em;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .drink-box h2 {
+      margin-top: 0;
+      font-size: 1.2em;
+    }
+    .section-title {
+      font-weight: bold;
+      margin-top: 0.5em;
+    }
+    ul {
+      padding-left: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>SS14 Bartender Drinks</h1>
+  <div class="drink-container" id="drink-container"></div>
+
+  <script>
+    fetch('data.json')
+      .then(r => r.json())
+      .then(data => {
+        data.sort((a, b) => a.id.localeCompare(b.id));
+
+        const container = document.getElementById('drink-container');
+
+        data.forEach(drink => {
+          const box = document.createElement('div');
+          box.className = 'drink-box';
+
+          const title = document.createElement('h2');
+          title.textContent = drink.id;
+          box.appendChild(title);
+
+          if (drink.reactants?.length) {
+            const ingTitle = document.createElement('div');
+            ingTitle.textContent = 'Ingredients:';
+            ingTitle.className = 'section-title';
+            box.appendChild(ingTitle);
+
+            const ingList = document.createElement('ul');
+            drink.reactants.forEach(r => {
+              const li = document.createElement('li');
+              li.textContent = `${r.amount}x ${r.id}`;
+              ingList.appendChild(li);
+            });
+            box.appendChild(ingList);
+          }
+
+          if (drink.products?.length) {
+            const outTitle = document.createElement('div');
+            outTitle.textContent = 'Produces:';
+            outTitle.className = 'section-title';
+            box.appendChild(outTitle);
+
+            const prodList = document.createElement('ul');
+            drink.products.forEach(p => {
+              const li = document.createElement('li');
+              li.textContent = `${p.amount}x ${p.id}`;
+              if (p.reagentData?.metabolisms) {
+                const effects = Object.entries(p.reagentData.metabolisms).flatMap(([key, meta]) => {
+                  return (meta.effects || []).map(e => `${e.type}`);
+                });
+                if (effects.length) {
+                  const effectDiv = document.createElement('div');
+                  effectDiv.style.fontSize = '0.9em';
+                  effectDiv.style.color = '#444';
+                  effectDiv.textContent = 'Effects: ' + effects.join(', ');
+                  li.appendChild(effectDiv);
+                }
+              }
+              prodList.appendChild(li);
+            });
+            box.appendChild(prodList);
+          }
+
+          container.appendChild(box);
+        });
+      });
+  </script>
+</body>
+</html>
